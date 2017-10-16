@@ -1,0 +1,46 @@
+service: operation-ec2-instance
+
+provider:
+  name: aws
+  runtime: java8
+  stage: prod
+  region: ap-northeast-1
+  timeout: 30
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "logs:CreateLogGroup"
+        - "logs:CreateLogStream"
+        - "logs:PutLogEvents"
+      Resource:
+        - "Fn::Join":
+          - ":"
+          -
+            - "arn:aws:logs"
+            - Ref: "AWS::Region"
+            - Ref: "AWS::AccountId"
+            - "log-group:/aws/lambda/*:*:*"
+    - Effect: "Allow"
+      Action:
+        - "ec2:StartInstances"
+        - "ec2:StopInstances"
+      Resource:
+        - "arn:aws:ec2:*"
+
+package:
+  artifact: target/operation-ec2-instance-1.0.0.jar
+
+functions:
+  operation-ec2-instance:
+    handler: jp.co.stylez.serverless.Handler
+    events:
+      - schedule:
+          rate: cron(30 11 * * ? *)
+          input:
+            goal: start
+            instanceId: i-XXXXXXXXXXXXXXXXX
+      - schedule:
+          rate: cron(0 23 * * ? *)
+          input:
+            goal: stop
+            instanceId: i-XXXXXXXXXXXXXXXXX

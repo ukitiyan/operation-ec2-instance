@@ -37,10 +37,10 @@ functions:
       - schedule:
           rate: cron(30 11 * * ? *)
           input:
-            goal: start
+            goal: stop
             instanceId: i-XXXXXXXXXXXXXXXXX
       - schedule:
           rate: cron(0 23 * * ? *)
           input:
-            goal: stop
+            goal: start
             instanceId: i-XXXXXXXXXXXXXXXXX
